@@ -10,6 +10,9 @@ const base = path.join(homedir(), 'AppData', 'LocalLow', 'VRChat', 'VRChat')
 const store = createConfigStore(base)
 const page = fileURLToPath(new URL('../dist/index.html', import.meta.url))
 const pageUrl = pathToFileURL(page).href
+const icon = app.isPackaged
+  ? path.join(process.resourcesPath, 'icon.ico')
+  : fileURLToPath(new URL('../assets/icon.ico', import.meta.url))
 let window
 let saving = false
 
@@ -38,6 +41,7 @@ function createWindow() {
     height: 770,
     minWidth: 670,
     minHeight: 575,
+    icon,
     backgroundColor: '#101319',
     titleBarStyle: 'hidden',
     titleBarOverlay: { color: '#151a22', symbolColor: '#bcc8d8', height: 43 },
@@ -59,6 +63,8 @@ function createWindow() {
     app.quit()
   })
 }
+
+app.setAppUserModelId('io.github.yixijun.VRChatCacheTool')
 
 if (!app.requestSingleInstanceLock()) app.quit()
 else {

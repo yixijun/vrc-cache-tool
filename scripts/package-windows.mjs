@@ -2,6 +2,7 @@ import { createPackage } from '@electron/asar'
 import { cp, mkdir, mkdtemp, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
+import { Data, NtExecutable, NtExecutableResource, Resource } from 'resedit'
 
 if (process.platform !== 'win32' || process.arch !== 'x64') {
   throw new Error('要构建此发布包，请使用 Windows x64 上的 Node.js。')
@@ -13,6 +14,7 @@ const require = createRequire(import.meta.url)
 const electron = require('electron')
 const release = path.join(root, 'release')
 const output = path.join(release, 'VRChatCacheTool-win-x64')
+const iconPath = path.join(root, 'assets', 'icon.ico')
 await mkdir(release, { recursive: true })
 if (await realpath(release) !== release) throw new Error('release 须为项目下的普通目录。')
 const staging = await mkdtemp(path.join(release, '.build-'))
@@ -32,7 +34,19 @@ try {
   ])
   await createPackage(app, path.join(runtime, 'resources', 'app.asar'))
   await rm(path.join(runtime, 'resources', 'default_app.asar'), { force: true })
-  await rename(path.join(runtime, 'electron.exe'), path.join(runtime, 'VRChatCacheTool.exe'))
+  const originalExe = path.join(runtime, 'electron.exe')
+  const executable = NtExecutable.from(await readFile(originalExe))
+  const resources = NtExecutableResource.from(executable)
+  const [group, ...otherGroups] = Resource.IconGroupEntry.fromEntries(resources.entries)
+  if (!group || otherGroups.length) throw new Error('无法识别 Electron 的 EXE 图标资源。')
+  const logo = Data.IconFile.from(await readFile(iconPath))
+  Resource.IconGroupEntry.replaceIconsForResource(
+    resources.entries, group.id, group.lang, logo.icons.map(({ data }) => data),
+  )
+  resources.outputResource(executable)
+  await writeFile(path.join(runtime, 'VRChatCacheTool.exe'), new Uint8Array(executable.generate()))
+  await rm(originalExe)
+  await cp(iconPath, path.join(runtime, 'resources', 'icon.ico'))
   await cp(path.join(root, 'README.md'), path.join(runtime, 'README.md'))
   const licensePackages = ['vue', 'react', 'react-dom', 'scheduler']
   const licenses = await Promise.all(licensePackages.map(async name => {

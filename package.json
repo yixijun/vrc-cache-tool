@@ -1,6 +1,6 @@
 {
   "name": "vrchat-cache-tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "productName": "VRChat 缓存工具",
   "type": "module",
@@ -24,6 +24,7 @@
     "@vitejs/plugin-react": "6.3.0",
     "@vitejs/plugin-vue": "6.0.11",
     "electron": "45.4.1",
+    "resedit": "3.1.1",
     "vite": "8.3.8"
   }
 }
