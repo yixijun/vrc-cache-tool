@@ -1,6 +1,7 @@
 {
   "name": "vrchat-cache-tool",
   "version": "1.0.1",
+  "description": "Windows utility for configuring and testing the VRChat download cache",
   "private": true,
   "productName": "VRChat 缓存工具",
   "type": "module",
@@ -9,7 +10,21 @@
     "build": "vite build",
     "start": "npm run build && electron .",
     "test": "node --test",
-    "package:win": "npm run build && node scripts/package-windows.mjs"
+    "package:win": "npm run build && node scripts/package-windows.mjs",
+    "package:portable": "npm run package:win && electron-builder --win portable --x64 --prepackaged release/VRChatCacheTool-win-x64 --publish never"
+  },
+  "build": {
+    "appId": "io.github.yixijun.VRChatCacheTool",
+    "directories": {
+      "output": "release/portable"
+    },
+    "win": {
+      "executableName": "VRChatCacheTool",
+      "icon": "assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "VRChatCacheTool-win-x64.${ext}"
+    }
   },
   "engines": {
     "node": ">=22.12.0"
@@ -24,6 +39,7 @@
     "@vitejs/plugin-react": "6.3.0",
     "@vitejs/plugin-vue": "6.0.11",
     "electron": "45.4.1",
+    "electron-builder": "26.18.0",
     "resedit": "3.1.1",
     "vite": "8.3.8"
   }

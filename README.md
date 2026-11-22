@@ -4,7 +4,7 @@ Windows 上的 VRChat 下载缓存设置和检测工具。Electron 负责桌面�
 
 ## 使用
 
-1. 解压 Windows x64 便携包，双击 `VRChatCacheTool.exe`。
+1. 从 [GitHub Releases](https://github.com/yixijun/vrc-cache-tool/releases) 下载并双击 `VRChatCacheTool-win-x64.exe`。单文件便携版无需安装。
 2. 填写缓存目录、缓存上限和过期时间。留空使用 VRChat 默认值，容量和天数至少为 30。
 3. 点击「运行检测」，检查当前表单、目录读写、可用空间和 `Cache-WindowsPlayer` 内容缓存占用。目标目录尚未生成时，工具检测最近的现有上级目录。
 4. 点击「应用设置」后重启 VRChat。如果更换了缓存目录，可以进入一个需要下载的世界，再检查新目录的缓存占用和最近修改时间。
@@ -26,10 +26,12 @@ npm start
 
 ```powershell
 npm test
-npm run package:win
+npm run package:portable
 ```
 
-发布目录为 `release/VRChatCacheTool-win-x64`。分发时请携带整个目录。
+单文件便携版输出到 `release/portable/VRChatCacheTool-win-x64.exe`。`npm run package:win` 可以单独构建未封装的应用目录。
+
+在 GitHub Actions 中运行 **Release Windows EXE** 工作流并指定版本标签，可编译、测试并将 EXE 发布到对应的 GitHub Release。
 
 ## 官方资料
 

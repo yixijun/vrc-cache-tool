@@ -1,0 +1,52 @@
+name: Release Windows EXE
+run-name: Publish ${{ inputs.tag }} for Windows x64
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, for example v1 or v1.2.0
+        type: string
+        required: true
+        default: v1
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-windows-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run package:portable
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if ($env:RELEASE_TAG -cnotmatch '^v[0-9]+(\.[0-9]+){0,2}$') {
+            throw 'Use a release tag such as v1 or v1.2.0.'
+          }
+          $exe = Get-Item -LiteralPath 'release/portable/VRChatCacheTool-win-x64.exe'
+          if ($exe.Length -lt 10MB) { throw 'The portable EXE appears to be incomplete.' }
+          $existing = git ls-remote --tags origin "refs/tags/$env:RELEASE_TAG"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($existing) { throw "Tag $env:RELEASE_TAG already exists." }
+          gh release create $env:RELEASE_TAG $exe.FullName --repo $env:GITHUB_REPOSITORY `
+            --target $env:GITHUB_SHA --title $env:RELEASE_TAG.ToUpperInvariant() `
+            --notes 'Windows x64 单文件便携版。下载 EXE 后双击运行，无需安装。'
+          exit $LASTEXITCODE
