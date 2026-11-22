@@ -11,7 +11,8 @@ if (process.platform !== 'win32' || process.arch !== 'x64') {
 const root = await realpath(path.dirname(import.meta.dirname))
 const manifest = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'))
 const require = createRequire(import.meta.url)
-const electron = require('electron')
+const electronRoot = path.dirname(require('electron'))
+const locales = new Set(['en-US.pak', 'zh-CN.pak', 'zh-TW.pak'])
 const release = path.join(root, 'release')
 const output = path.join(release, 'VRChatCacheTool-win-x64')
 const iconPath = path.join(root, 'assets', 'icon.ico')
@@ -24,7 +25,13 @@ try {
   const runtime = path.join(staging, 'runtime')
   await mkdir(app)
   await Promise.all([
-    cp(path.dirname(electron), runtime, { recursive: true }),
+    cp(electronRoot, runtime, {
+      recursive: true,
+      filter: source => {
+        const relative = path.relative(electronRoot, source)
+        return path.dirname(relative) !== 'locales' || path.extname(relative) !== '.pak' || locales.has(path.basename(relative))
+      },
+    }),
     cp(path.join(root, 'dist'), path.join(app, 'dist'), { recursive: true }),
     cp(path.join(root, 'electron'), path.join(app, 'electron'), { recursive: true }),
     writeFile(path.join(app, 'package.json'), JSON.stringify({
