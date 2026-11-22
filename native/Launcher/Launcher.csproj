@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>VRChatCacheTool-win-x64</AssemblyName>
+    <ApplicationIcon>../../assets/icon.ico</ApplicationIcon>
+    <Version>1.0.1</Version>
+    <Description>VRChat 缓存工具</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Windows.Forms" />
+    <EmbeddedResource Include="$(PayloadFile)" LogicalName="Payload.zip" Condition="'$(PayloadFile)' != ''" />
+  </ItemGroup>
+</Project>

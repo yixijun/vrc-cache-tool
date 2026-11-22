@@ -5,26 +5,12 @@
   "private": true,
   "productName": "VRChat 缓存工具",
   "type": "module",
-  "main": "electron/main.mjs",
   "scripts": {
     "build": "vite build",
-    "start": "npm run build && electron .",
-    "test": "node --test",
-    "package:win": "npm run build && node scripts/package-windows.mjs",
-    "package:portable": "npm run package:win && electron-builder --win portable --x64 --prepackaged release/VRChatCacheTool-win-x64 --publish never"
-  },
-  "build": {
-    "appId": "io.github.yixijun.VRChatCacheTool",
-    "directories": {
-      "output": "release/portable"
-    },
-    "win": {
-      "executableName": "VRChatCacheTool",
-      "icon": "assets/icon.ico"
-    },
-    "portable": {
-      "artifactName": "VRChatCacheTool-win-x64.${ext}"
-    }
+    "start": "npm run package:portable && pwsh -NoProfile -Command \"Start-Process './release/portable/VRChatCacheTool-win-x64.exe'\"",
+    "test": "dotnet run --project native/Tests/Tests.csproj --configuration Release",
+    "package:win": "npm run build && pwsh -NoProfile -File scripts/build-webview2.ps1",
+    "package:portable": "npm run package:win"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -35,12 +21,8 @@
     "vue": "3.5.46"
   },
   "devDependencies": {
-    "@electron/asar": "4.3.2",
     "@vitejs/plugin-react": "6.3.0",
     "@vitejs/plugin-vue": "6.0.11",
-    "electron": "45.4.1",
-    "electron-builder": "26.18.0",
-    "resedit": "3.1.1",
     "vite": "8.3.8"
   }
 }

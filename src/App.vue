@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import DiagnosticsPanel from './DiagnosticsPanel.vue'
+import { callHost } from './bridge.js'
 
 const empty = { directory: '', size: '', expiry: '' }
 const form = reactive({ ...empty })
@@ -26,7 +27,7 @@ async function perform(operation, work) {
 }
 
 async function call(method, ...args) {
-  const reply = await window.cacheTool[method](...args)
+  const reply = await callHost(method, ...args)
   if (!reply.ok) throw new Error(reply.error)
   return reply.value
 }
@@ -87,11 +88,6 @@ onMounted(() => reload(false))
 </script>
 
 <template>
-  <div class="titlebar">
-    <span class="app-mark small" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span>VRChat 缓存工具</span>
-  </div>
-
   <main class="workspace">
     <header class="intro">
       <div class="intro-main">
