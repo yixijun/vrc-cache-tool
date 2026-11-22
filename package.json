@@ -1,0 +1,29 @@
+{
+  "name": "vrchat-cache-tool",
+  "version": "1.0.0",
+  "private": true,
+  "productName": "VRChat 缓存工具",
+  "type": "module",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "build": "vite build",
+    "start": "npm run build && electron .",
+    "test": "node --test",
+    "package:win": "npm run build && node scripts/package-windows.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vue": "3.5.46"
+  },
+  "devDependencies": {
+    "@electron/asar": "4.3.2",
+    "@vitejs/plugin-react": "6.3.0",
+    "@vitejs/plugin-vue": "6.0.11",
+    "electron": "45.4.1",
+    "vite": "8.3.8"
+  }
+}
