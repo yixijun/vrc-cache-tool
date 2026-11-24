@@ -1,9 +1,9 @@
 {
   "name": "vrchat-cache-tool",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Windows utility for configuring and testing the VRChat download cache",
   "private": true,
-  "productName": "VRChat 缓存工具",
+  "productName": "VRChat 缓存管理",
   "type": "module",
   "scripts": {
     "build": "vite build",

@@ -6,8 +6,8 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>VRChatCacheTool-win-x64</AssemblyName>
     <ApplicationIcon>../../assets/icon.ico</ApplicationIcon>
-    <Version>1.0.1</Version>
-    <Description>VRChat 缓存工具</Description>
+    <Version>1.1.0</Version>
+    <Description>VRChat 缓存管理</Description>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.IO.Compression" />

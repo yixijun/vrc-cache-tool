@@ -62,19 +62,38 @@ internal sealed class ToolWindow : Form
         "AppData", "LocalLow", "VRChat", "VRChat"));
     private readonly string assets;
     private readonly string appData;
+    private float dpiScale = 1f;
 
     public ToolWindow(string assets, string appData)
     {
         this.assets = assets;
         this.appData = appData;
-        Text = "VRChat 缓存工具";
+        Text = "VRChat 缓存管理";
         Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         StartPosition = FormStartPosition.CenterScreen;
         ClientSize = new Size(1040, 725);
         MinimumSize = new Size(670, 575);
         BackColor = view.DefaultBackgroundColor;
+        FormBorderStyle = FormBorderStyle.None;
         Controls.Add(view);
         Shown += Initialize;
+    }
+
+    // 仅此一处改动：窗口尺寸按实际 DPI 缩放，并限制在屏幕工作区内。
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        float scale;
+        using (var graphics = CreateGraphics()) scale = graphics.DpiX / 96f;
+        if (scale <= 1.01f) scale = DeviceDpi / 96f;
+        var area = Screen.PrimaryScreen.WorkingArea;
+        int width = Math.Min((int)Math.Round(1040 * scale), Math.Max(area.Width - 80, 900));
+        int height = Math.Min((int)Math.Round(660 * scale), Math.Max(area.Height - 80, 640));
+        ClientSize = new Size(width, height);
+        MinimumSize = new Size((int)Math.Round(760 * scale), (int)Math.Round(560 * scale));
+        dpiScale = scale;
+        MaximizedBounds = Screen.FromControl(this).WorkingArea;
+        CenterToScreen();
     }
 
     protected override void OnHandleCreated(EventArgs args)
@@ -82,8 +101,70 @@ internal sealed class ToolWindow : Form
         base.OnHandleCreated(args);
         var enabled = 1;
         DwmSetWindowAttribute(Handle, 20, ref enabled, sizeof(int));
+        var round = 2; // DWMWCP_ROUND
+        DwmSetWindowAttribute(Handle, 33, ref round, sizeof(int));
     }
 
+    // ---------------- 无边框窗口：边缘缩放 / 拖动 / 按钮 ----------------
+
+    private const int WM_NCHITTEST = 0x0084;
+    private const int WM_NCLBUTTONDOWN = 0x00A1;
+    private const int HTCLIENT = 1;
+    private const int HTCAPTION = 2;
+    private const int HTLEFT = 10;
+    private const int HTRIGHT = 11;
+    private const int HTTOP = 12;
+    private const int HTTOPLEFT = 13;
+    private const int HTTOPRIGHT = 14;
+    private const int HTBOTTOM = 15;
+    private const int HTBOTTOMLEFT = 16;
+    private const int HTBOTTOMRIGHT = 17;
+
+    protected override void WndProc(ref Message message)
+    {
+        if (message.Msg == WM_NCHITTEST && WindowState == FormWindowState.Normal)
+        {
+            base.WndProc(ref message);
+            if (message.Result.ToInt32() == HTCLIENT)
+            {
+                long value = message.LParam.ToInt64();
+                int x = unchecked((short)(value & 0xFFFF));
+                int y = unchecked((short)((value >> 16) & 0xFFFF));
+                Point point = PointToClient(new Point(x, y));
+                int border = Math.Max(6, (int)Math.Round(8 * dpiScale));
+                bool left = point.X <= border;
+                bool right = point.X >= ClientSize.Width - border;
+                bool top = point.Y <= border;
+                bool bottom = point.Y >= ClientSize.Height - border;
+                if (top && left) message.Result = (IntPtr)HTTOPLEFT;
+                else if (top && right) message.Result = (IntPtr)HTTOPRIGHT;
+                else if (bottom && left) message.Result = (IntPtr)HTBOTTOMLEFT;
+                else if (bottom && right) message.Result = (IntPtr)HTBOTTOMRIGHT;
+                else if (left) message.Result = (IntPtr)HTLEFT;
+                else if (right) message.Result = (IntPtr)HTRIGHT;
+                else if (top) message.Result = (IntPtr)HTTOP;
+                else if (bottom) message.Result = (IntPtr)HTBOTTOM;
+            }
+            return;
+        }
+        base.WndProc(ref message);
+    }
+
+    private void BeginDrag()
+    {
+        if (WindowState == FormWindowState.Maximized)
+        {
+            WindowState = FormWindowState.Normal;
+        }
+        ReleaseCapture();
+        SendMessage(Handle, WM_NCLBUTTONDOWN, (IntPtr)HTCAPTION, IntPtr.Zero);
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool ReleaseCapture();
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    private static extern IntPtr SendMessage(IntPtr window, int message, IntPtr wParam, IntPtr lParam);
     private async void Initialize(object sender, EventArgs args)
     {
         try
@@ -152,6 +233,12 @@ internal sealed class ToolWindow : Form
                 return null;
             case "openConfig": OpenFolder(service.Base); return null;
             case "openDocs": Launch(Docs); return null;
+            case "windowMinimize": WindowState = FormWindowState.Minimized; return null;
+            case "windowMaximize":
+                WindowState = WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
+                return WindowState == FormWindowState.Maximized;
+            case "windowClose": BeginInvoke(new Action(Close)); return null;
+            case "windowDrag": BeginDrag(); return null;
             default: throw new ArgumentException("未知操作。");
         }
     }

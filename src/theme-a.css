@@ -1,0 +1,58 @@
+/* 主题 A · 工具冷灰 + 琥珀
+   中性色带蓝灰偏移，强调色只有一个（琥珀），危险用砖红、成功用低饱和绿。
+   变量名沿用基础样式里的 --teal / --teal-2（作为"强调色"使用）。 */
+
+:root {
+  --bg: #0e1116;
+  --bg-2: #101319;
+
+  --panel: #161a21;
+  --panel-2: #1a1f27;
+  --panel-3: #1f242d;
+  --field: #12161c;
+
+  --glass: #161a21;
+  --glass-strong: #1a1f27;
+  --glass-line: rgba(255, 255, 255, 0.07);
+  --glass-line-hot: rgba(232, 184, 106, 0.32);
+
+  --text: #e7eaee;
+  --text-2: #98a2b3;
+  --text-3: #667085;
+
+  /* 强调：琥珀 */
+  --accent: #e8b86a;
+  --accent-hover: #f0c67c;
+  --accent-ink: #1b1509;
+  --accent-soft: rgba(232, 184, 106, 0.10);
+  --accent-soft-2: rgba(232, 184, 106, 0.16);
+  --accent-line: rgba(232, 184, 106, 0.26);
+  --accent-line-solid: rgba(232, 184, 106, 0.52);
+
+  --teal: #e8b86a;
+  --teal-2: #d9a253;
+  --teal-deep: #8a5f26;
+  --glow: transparent;
+  --glow-soft: transparent;
+
+  --warn: #e0a458;
+  --warn-bg: rgba(224, 164, 88, 0.10);
+  --danger: #d2695e;
+  --bad: #d2695e;
+  --bad-bg: rgba(210, 105, 94, 0.10);
+  --ok: #7fb069;
+  --ok-bg: rgba(127, 176, 105, 0.10);
+
+  --radius: 13px;
+  --radius-sm: 9px;
+}
+
+/* A 版背景只有一层极淡的暖光 */
+.aurora__blob--a {
+  background: radial-gradient(circle at 38% 38%, rgba(232, 184, 106, 0.30), rgba(232, 184, 106, 0) 68%);
+}
+
+.aurora__blob--b,
+.aurora__blob--c {
+  background: none;
+}

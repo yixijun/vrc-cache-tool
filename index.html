@@ -4,10 +4,155 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'" />
-    <title>VRChat 缓存工具</title>
+    <title>VRChat 缓存管理</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
+  <body class="booting">
+    <div class="aurora" aria-hidden="true">
+      <span class="aurora__blob aurora__blob--a"></span>
+      <span class="aurora__blob aurora__blob--b"></span>
+      <span class="aurora__blob aurora__blob--c"></span>
+      <span class="aurora__sweep"></span>
+      <span class="aurora__grain"></span>
+      <span class="aurora__dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+
+    <main class="shell">
+      <header class="hero">
+        <div class="hero__left">
+          <div class="hero__brand">
+            <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div class="hero__text">
+              <h1>VRChat 缓存管理</h1>
+              <p>设置VRChat缓存并检查本机储存</p>
+            </div>
+          </div>
+        </div>
+        <div class="hero__side">
+          <button class="btn btn--ghost" type="button" data-act="docs">
+            官方文档 <span class="arrow" aria-hidden="true">↗</span>
+          </button>
+          <div class="winbar" role="group" aria-label="窗口控制">
+            <button class="winbtn" type="button" data-act="win-min" title="最小化" aria-label="最小化"><b class="g-min"></b></button>
+            <button class="winbtn" type="button" data-act="win-max" title="最大化" aria-label="最大化"><b class="g-max"></b><b class="g-restore"></b></button>
+            <button class="winbtn winbtn--close" type="button" data-act="win-close" title="关闭" aria-label="关闭"><b class="g-close"></b></button>
+          </div>
+        </div>
+      </header>
+
+      <section class="ribbon" aria-label="配置状态">
+        <span class="ribbon__tag">配置</span>
+        <code class="ribbon__path" id="cfg-path">正在定位 config.json…</code>
+        <span class="pill" id="dirty" data-state="idle">读取中</span>
+      </section>
+
+      <div class="banner" id="banner" hidden>
+        <span class="banner__icon" aria-hidden="true">!</span>
+        <p id="banner-text"></p>
+      </div>
+
+      <div class="grid">
+        <section class="card card--form" aria-labelledby="form-title">
+          <header class="card__head">
+            <div class="card__title">
+              <h2 id="form-title">缓存设置</h2>
+              <p>改动保存后，重启 VRChat 才会生效</p>
+            </div>
+            <button class="btn btn--quiet" type="button" data-act="reload">重新读取</button>
+          </header>
+
+          <form class="form" id="form" novalidate>
+            <div class="field">
+              <label for="directory">缓存目录</label>
+              <div class="row">
+                <div class="input">
+                  <input id="directory" type="text" spellcheck="false" autocomplete="off" placeholder="留空 = VRChat 默认目录" aria-describedby="directory-hint" />
+                  <span class="input__glow" aria-hidden="true"></span>
+                </div>
+                <button class="btn btn--soft" type="button" data-act="pick">浏览…</button>
+              </div>
+              <p class="hint" id="directory-hint">下载内容会落在该目录下的 <code>Cache-WindowsPlayer</code> 子目录。</p>
+            </div>
+
+            <div class="duo">
+              <div class="field">
+                <label for="size">缓存上限</label>
+                <div class="input input--unit">
+                  <input id="size" type="text" inputmode="numeric" autocomplete="off" placeholder="30" aria-describedby="number-hint" />
+                  <span class="unit">GB</span>
+                  <span class="input__glow" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="expiry">过期时间</label>
+                <div class="input input--unit">
+                  <input id="expiry" type="text" inputmode="numeric" autocomplete="off" placeholder="30" aria-describedby="number-hint" />
+                  <span class="unit">天</span>
+                  <span class="input__glow" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+            <p class="hint" id="number-hint">两项留空即官方默认值 30；过期时间从文件上次访问起算。</p>
+
+            <div class="usage" id="usage" data-state="empty">
+              <div class="usage__head">
+                <span class="usage__label">占用概览</span>
+                <span class="usage__value" id="usage-value">运行检测后可查看</span>
+              </div>
+              <div class="usage__bar" role="img" aria-label="缓存占用与磁盘可用空间">
+                <span class="usage__cache" id="usage-cache"></span>
+                <span class="usage__free" id="usage-free"></span>
+              </div>
+              <div class="usage__legend">
+                <span><i class="dot dot--cache"></i>内容缓存 <b id="usage-cache-text">—</b></span>
+                <span><i class="dot dot--free"></i>磁盘可用 <b id="usage-free-text">—</b></span>
+              </div>
+            </div>
+
+            <footer class="card__foot">
+              <button class="btn btn--quiet" type="button" data-act="reset">恢复默认</button>
+              <button class="btn btn--primary" type="submit" id="apply">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="btn__label">应用设置</span>
+              </button>
+            </footer>
+          </form>
+        </section>
+
+        <section class="card card--diag" aria-labelledby="diag-title">
+          <header class="card__head">
+            <div class="card__title">
+              <h2 id="diag-title">存储检测</h2>
+              <p>目录读写 · 可用空间 · 内容缓存占用</p>
+            </div>
+            <button class="btn btn--accent" type="button" data-act="test" id="test">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn__label">运行检测</span>
+            </button>
+          </header>
+
+          <p class="diag__lead" id="diag-lead">还没有检测结果，点右上角开始体检。</p>
+          <ul class="checks" id="checks"></ul>
+
+          <footer class="card__foot">
+            <button class="btn btn--quiet" type="button" data-act="cache">
+              打开缓存文件夹 <span class="arrow" aria-hidden="true">↗</span>
+            </button>
+            <code class="target" id="target"></code>
+          </footer>
+        </section>
+      </div>
+
+      <footer class="foot">
+        <button class="btn btn--quiet" type="button" data-act="config">
+          配置位置 <span class="arrow" aria-hidden="true">↗</span>
+        </button>
+        <p class="foot__note" id="note">设置只会写入上面那份 config.json，其它键原样保留。</p>
+      </footer>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <script type="module" src="/src/app.js"></script>
   </body>
 </html>

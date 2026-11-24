@@ -1,0 +1,475 @@
+/* 去「AI 味」的公共改造层
+   思路：去掉发光、彩色阴影、渐变文字、装饰性动效；面板改为扁平实色 + 1px 描边。
+   本文件在 styles.css 之后加载，用同选择器覆盖；配色变量来自 theme-A.css / theme-B.css。 */
+
+/* ---------- 1. 背景：只留一层极慢的光斑 ---------- */
+
+body {
+  background: var(--bg);
+  background-attachment: fixed;
+}
+
+.aurora {
+  transform: none !important;
+  transition: none;
+}
+
+.aurora__sweep,
+.aurora__dust {
+  display: none;
+}
+
+.aurora__blob {
+  filter: blur(96px);
+  opacity: 0.22;
+}
+
+.aurora__blob--a {
+  animation-duration: 140s;
+}
+
+.aurora__blob--b,
+.aurora__blob--c {
+  display: none;
+}
+
+.aurora__grain {
+  opacity: 0.32;
+  animation: none;
+}
+
+body::after {
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- 2. 标题：不要渐变字 ---------- */
+
+.hero h1 {
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  color: var(--text);
+  -webkit-text-fill-color: currentColor;
+  letter-spacing: -0.015em;
+  font-weight: 650;
+}
+
+.mark {
+  background: var(--panel-2);
+  border-color: var(--glass-line);
+  box-shadow: none;
+  border-radius: 12px;
+}
+
+.mark i {
+  background: var(--accent);
+  box-shadow: none;
+  opacity: 0.9;
+}
+
+.mark i:nth-child(2) { opacity: 0.62; }
+.mark i:nth-child(3) { opacity: 0.4; }
+
+/* ---------- 3. 面板：扁平实色，去掉玻璃与悬停位移 ---------- */
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius);
+  backdrop-filter: none;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26);
+  transform: none;
+  animation: none;
+}
+
+.card:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.11);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26);
+}
+
+.card::before {
+  background: linear-gradient(90deg, transparent, var(--accent-line), transparent);
+  opacity: 0.5;
+}
+
+.card__head {
+  background: var(--panel);
+  border-bottom-color: var(--glass-line);
+}
+
+/* ---------- 4. 按钮：实色、无发光、无位移 ---------- */
+
+.btn {
+  border-radius: 8px;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+
+.btn:hover { transform: none; }
+.btn:active { transform: none; }
+
+.btn--primary,
+.btn--accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.btn--primary:hover,
+.btn--accent:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--accent-ink);
+  box-shadow: none;
+  transform: none;
+}
+
+.btn--soft {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.btn--soft:hover {
+  background: var(--accent-soft-2);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.btn--ghost {
+  background: var(--panel-2);
+  border-color: var(--glass-line);
+  color: var(--text-2);
+}
+
+.btn--ghost:hover {
+  background: var(--panel-3);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--text);
+}
+
+.btn--quiet:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.btn:focus-visible,
+.winbtn:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-line);
+}
+
+.winbtn {
+  border-radius: 7px;
+  background: var(--panel-2);
+  border-color: var(--glass-line);
+}
+
+.winbtn:hover {
+  background: var(--panel-3);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.winbtn--close:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  box-shadow: none;
+}
+
+/* ---------- 5. 输入框：去掉光晕与流光 ---------- */
+
+.input {
+  background: var(--field);
+  border-color: var(--glass-line);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.input:focus-within {
+  border-color: var(--accent-line-solid);
+  background: var(--field);
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+
+.input__glow { display: none; }
+
+.hint code {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+/* ---------- 6. 状态药丸、告示条：低饱和 ---------- */
+
+.pill {
+  background: var(--panel-2);
+  border-color: var(--glass-line);
+  border-radius: 6px;
+}
+
+.pill::before {
+  box-shadow: none;
+  width: 5px;
+  height: 5px;
+}
+
+.pill[data-state="clean"] { color: var(--ok); border-color: rgba(255, 255, 255, 0.09); background: var(--panel-2); }
+.pill[data-state="dirty"] { color: var(--warn); border-color: rgba(255, 255, 255, 0.09); background: var(--panel-2); }
+.pill[data-state="blocked"] { color: var(--danger); border-color: rgba(255, 255, 255, 0.09); background: var(--panel-2); }
+
+.ribbon {
+  background: var(--panel);
+  border-color: var(--glass-line);
+  backdrop-filter: none;
+  border-radius: 8px;
+}
+
+.ribbon__tag {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+  border-radius: 5px;
+  letter-spacing: 0.04em;
+}
+
+.banner {
+  border-radius: 8px;
+  border-color: rgba(224, 164, 88, 0.3);
+  background: rgba(224, 164, 88, 0.08);
+}
+
+.banner[data-kind="error"] {
+  border-color: rgba(210, 105, 94, 0.32);
+  background: rgba(210, 105, 94, 0.08);
+}
+
+/* ---------- 7. 检测行：图标改扁平描边，不做弹跳 ---------- */
+
+.check {
+  border-color: var(--glass-line);
+  background: var(--panel-2);
+  border-radius: 8px;
+  animation: none;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.check:hover {
+  transform: none;
+  background: var(--panel-3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.check__icon {
+  background: var(--panel-3);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-3);
+  box-shadow: none;
+  animation: none;
+}
+
+.check[data-state="ok"] .check__icon {
+  background: rgba(127, 176, 105, 0.14);
+  border-color: rgba(127, 176, 105, 0.45);
+  color: var(--ok);
+  animation: none;
+}
+
+.check[data-state="warn"] .check__icon {
+  background: rgba(224, 164, 88, 0.14);
+  border-color: rgba(224, 164, 88, 0.45);
+  color: var(--warn);
+  animation: none;
+}
+
+.check[data-state="error"] .check__icon {
+  background: rgba(210, 105, 94, 0.14);
+  border-color: rgba(210, 105, 94, 0.45);
+  color: var(--danger);
+  animation: none;
+}
+
+.check[data-state="busy"] .check__icon {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+/* ---------- 8. 占用概览：实色条 ---------- */
+
+.usage {
+  background: var(--panel-2);
+  border-color: var(--glass-line);
+  border-radius: 8px;
+}
+
+.usage__bar {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
+.usage__cache {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+.usage__free {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.dot--cache {
+  background: var(--accent);
+  box-shadow: none;
+  border-radius: 50%;
+}
+
+/* ---------- 9. 提示气泡：扁平 ---------- */
+
+.toast {
+  background: var(--panel);
+  border-color: var(--glass-line);
+  backdrop-filter: none;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42);
+  border-radius: 8px;
+}
+
+.toast::before {
+  box-shadow: none;
+}
+
+.toast[data-kind="error"] { border-color: rgba(210, 105, 94, 0.4); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42); }
+
+/* ---------- 10. 其余：统一去掉动效与发光 ---------- */
+
+.card__foot {
+  background: var(--panel);
+  border-top-color: var(--glass-line);
+}
+
+.hero__side .btn,
+.winbar {
+  gap: 6px;
+}
+
+* {
+  text-shadow: none !important;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------- 11. 中心呼吸的图标 + 启动动画 ---------------- */
+
+/* 三条杠以自身中心为原点向外呼吸；整个图标再叠一层极轻的整体缩放 */
+/* 呼吸：同时改变尺寸与亮度，边框不参与 */
+@keyframes bar-breath {
+  0%, 100% {
+    transform: scale(0.84, 1);
+    opacity: var(--bar-min, 0.5);
+  }
+  50% {
+    transform: scale(1.16, 1.3);
+    opacity: var(--bar-max, 1);
+  }
+}
+
+/* 只让三条杠呼吸；容器（圆角边框 + 底色 + 阴影）完全静止。
+   注意：只锁真实图标，不能锁 .boot-ghost（替身靠 transform 定位与缩放） */
+.hero .mark {
+  animation: none;
+  transform: none;
+}
+
+.mark i {
+  transform-origin: center center;
+  animation: bar-breath 2.6s ease-in-out infinite;
+}
+
+/* 每条杠各自的最暗 / 最亮，保留上下明暗层次 */
+.mark i:nth-child(1) { --bar-min: 0.55; --bar-max: 1;    }
+.mark i:nth-child(2) { --bar-min: 0.34; --bar-max: 0.78; }
+.mark i:nth-child(3) { --bar-min: 0.20; --bar-max: 0.6;  }
+
+/* 由下往上循序呼吸：底条 → 中条 → 顶条，每条错开 550ms */
+.mark i:nth-child(3) { animation-delay: 0s; }
+.mark i:nth-child(2) { animation-delay: 0.55s; }
+.mark i:nth-child(1) { animation-delay: 1.1s; }
+
+/* 启动用的替身：位置由 CSS 定，关键帧由 JS（Web Animations）驱动 */
+.boot-ghost {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 60;
+  margin: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: none !important;
+}
+/* 启动阶段：真实 logo 与 UI 先不可见（避免闪一下） */
+body.booting .hero .mark { opacity: 0; }
+
+body.booting .hero__text,
+body.booting .hero__side,
+body.booting .ribbon,
+body.booting .card,
+body.booting .foot {
+  opacity: 0 !important;
+  animation: none !important;
+  visibility: hidden;
+}
+
+/* logo 落位后依次入场 */
+@keyframes boot-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+body.booted .hero .mark {
+  opacity: 1;
+  transition: none;
+}
+
+body.booted .hero__text { animation: boot-rise 540ms cubic-bezier(0.16, 1, 0.3, 1) 40ms both; }
+body.booted .hero__side { animation: boot-rise 540ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both; }
+body.booted .ribbon    { animation: boot-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both; }
+body.booted .card--form { animation: boot-rise 600ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both; }
+body.booted .card--diag { animation: boot-rise 600ms cubic-bezier(0.16, 1, 0.3, 1) 290ms both; }
+body.booted .foot      { animation: boot-rise 560ms cubic-bezier(0.16, 1, 0.3, 1) 360ms both; }
+
+/* 标题下沿的一次性扫光 */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-line-solid), transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+body.booted .hero::after {
+  animation: boot-sweep 820ms cubic-bezier(0.22, 1, 0.36, 1) 110ms both;
+}
+
+@keyframes boot-sweep {
+  0%   { transform: scaleX(0); opacity: 0; }
+  25%  { opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* 降低动效：直接显示，不做飞入 */
+@media (prefers-reduced-motion: reduce) {
+  .mark, .mark i, .boot-ghost { animation: none !important; }
+  body.booted .hero__text, body.booted .hero__side, body.booted .ribbon,
+  body.booted .card--form, body.booted .card--diag, body.booted .foot,
+  body.booted .hero::after { animation: none !important; }
+  body.booting .hero .mark,
+  body.booting .hero__text, body.booting .hero__side,
+  body.booting .ribbon, body.booting .card, body.booting .foot { opacity: 1; }
+}
