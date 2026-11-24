@@ -235,13 +235,13 @@ body::after {
 
 .banner {
   border-radius: 8px;
-  border-color: rgba(224, 164, 88, 0.3);
-  background: rgba(224, 164, 88, 0.08);
+  border-color: var(--warn-line);
+  background: var(--warn-bg);
 }
 
 .banner[data-kind="error"] {
-  border-color: rgba(210, 105, 94, 0.32);
-  background: rgba(210, 105, 94, 0.08);
+  border-color: var(--danger-line);
+  background: var(--bad-bg);
 }
 
 /* ---------- 7. 检测行：图标改扁平描边，不做弹跳 ---------- */
@@ -269,22 +269,22 @@ body::after {
 }
 
 .check[data-state="ok"] .check__icon {
-  background: rgba(127, 176, 105, 0.14);
-  border-color: rgba(127, 176, 105, 0.45);
+  background: var(--ok-soft);
+  border-color: var(--ok-line);
   color: var(--ok);
   animation: none;
 }
 
 .check[data-state="warn"] .check__icon {
-  background: rgba(224, 164, 88, 0.14);
-  border-color: rgba(224, 164, 88, 0.45);
+  background: var(--warn-soft);
+  border-color: var(--warn-line);
   color: var(--warn);
   animation: none;
 }
 
 .check[data-state="error"] .check__icon {
-  background: rgba(210, 105, 94, 0.14);
-  border-color: rgba(210, 105, 94, 0.45);
+  background: var(--danger-soft);
+  border-color: var(--danger-line);
   color: var(--danger);
   animation: none;
 }
@@ -337,7 +337,7 @@ body::after {
   box-shadow: none;
 }
 
-.toast[data-kind="error"] { border-color: rgba(210, 105, 94, 0.4); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42); }
+.toast[data-kind="error"] { border-color: var(--danger-line); box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42); }
 
 /* ---------- 10. 其余：统一去掉动效与发光 ---------- */
 

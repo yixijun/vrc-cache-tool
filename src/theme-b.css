@@ -1,0 +1,67 @@
+/* 主题 B · VRChat 原生紫
+   单一紫色强调（呼应 VRChat 品牌），其余全是中性色；不用任何青色。
+   变量名沿用基础样式里的 --teal / --teal-2（作为"强调色"使用）。 */
+
+:root {
+  --bg: #0f0f12;
+  --bg-2: #121216;
+
+  --panel: #17171c;
+  --panel-2: #1b1b21;
+  --panel-3: #202027;
+  --field: #131318;
+
+  --glass: #17171c;
+  --glass-strong: #1b1b21;
+  --glass-line: rgba(255, 255, 255, 0.065);
+  --glass-line-hot: rgba(123, 110, 246, 0.4);
+
+  --text: #ededf2;
+  --text-2: #9a9aa6;
+  --text-3: #6b6b78;
+
+  /* 强调：VRChat 紫 */
+  --accent: #7b6ef6;
+  --accent-hover: #8d81f8;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(123, 110, 246, 0.12);
+  --accent-soft-2: rgba(123, 110, 246, 0.18);
+  --accent-line: rgba(123, 110, 246, 0.3);
+  --accent-line-solid: rgba(123, 110, 246, 0.55);
+
+  --teal: #7b6ef6;
+  --teal-2: #6a5cf0;
+  --teal-deep: #3f3799;
+  --glow: transparent;
+  --glow-soft: transparent;
+
+  --warn: #f2c879;
+  --warn-bg: rgba(242, 200, 121, 0.10);
+  --danger: #e0726b;
+  --bad: #e0726b;
+  --bad-bg: rgba(224, 114, 107, 0.10);
+  --ok: #74c69d;
+  --ok-bg: rgba(116, 198, 157, 0.10);
+
+/* 状态色的描边与底色：deai 层用这些变量，避免把某一版的色相写死 */
+  --ok-soft: rgba(116, 198, 157, 0.14);
+  --ok-line: rgba(116, 198, 157, 0.45);
+  --warn-soft: rgba(242, 200, 121, 0.14);
+  --warn-line: rgba(242, 200, 121, 0.45);
+  --danger-soft: rgba(224, 114, 107, 0.14);
+  --danger-line: rgba(224, 114, 107, 0.42);
+
+
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+/* B 版背景只有一层极淡的紫光 */
+.aurora__blob--a {
+  background: radial-gradient(circle at 40% 36%, rgba(123, 110, 246, 0.30), rgba(123, 110, 246, 0) 68%);
+}
+
+.aurora__blob--b,
+.aurora__blob--c {
+  background: none;
+}

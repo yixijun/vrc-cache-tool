@@ -2,4 +2,4 @@
    主题必须最后，才能覆盖基础样式里的 --teal / --glow 等旧变量。 */
 @import "./styles.css";
 @import "./deai.css";
-@import "./theme-a.css";
+@import "./theme-b.css";
